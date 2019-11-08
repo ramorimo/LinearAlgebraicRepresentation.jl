@@ -161,7 +161,7 @@ function minimal_cycles(angles_fn::Function, verbose=false)
                 print(Int(floor(50 * sum(count_marks) / ld_cellsnum)), "%\r")
             end
 
-            c_ld = spzeros(Int8, ld_cellsnum)
+            c_ld = spzeros(Int64, ld_cellsnum)
             if count_marks[sigma] == 0
                 c_ld[sigma] = 1
             else
