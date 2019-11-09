@@ -168,9 +168,10 @@ function minimal_cycles(angles_fn::Function, verbose=false)
                 c_ld[sigma] = -dir_marks[sigma]
             end
             c_lld = ld_bounds*c_ld
+			#IL LOOP È QUI
             while c_lld.nzind != []
-				#corolla = spzeros(Int8, ld_cellsnum)
-				corolla = zeros(Int64, ld_cellsnum)
+				#corolla = spzeros(Int64, ld_cellsnum)
+				corolla = zeros(Int8, ld_cellsnum)
                 for tau in c_lld.nzind
                     b_ld = ld_bounds[tau, :]
                     pivot = intersect(c_ld.nzind, b_ld.nzind)[1]
