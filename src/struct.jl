@@ -321,33 +321,57 @@ function struct2lar2(structure) # TODO: extend to true `LARmodels`
 	p(listOfModels, m, vertDict,defaultValue, W, larmodel, index)
 
 	append!(larmodel[1], W)
-	V = hcat(larmodel[1]...)
-	chains = [convert(Lar.Cells, chain) for chain in larmodel[2:end]]
+	V = convert(Array{Float64,2}, hcat(larmodel[1]...))
+
+	chains = create_chains(larmodel[2:end])
 	return (V, chains...)
+end
+
+function create_chains(list)
+	chains = []
+	for chain in list
+		c = convert(Array{Array{Int,1},1}, chain)
+		push!(chains, c)
+	end
+	return chains
 end
 
 function p(listOfModels, m, vertDict,defaultValue, W, larmodel, index)
 		for model in listOfModels
 			V = model[1]
-			for k=2:m
-				for incell in model[k]
-					outcell=[]
-					for v in incell
-						key = map(Lar.approxVal(7), V[:,v])
-						if get(vertDict,key,defaultValue)==defaultValue
-							index += 1
-							vertDict[key]=index
-							push!(outcell,index)
-							push!(W,key)
-						else
-							push!(outcell,vertDict[key])
-						end
-					end
-					append!(larmodel[k],[outcell])
-				end
-			end
+			p2(model, listOfModels, m, vertDict,defaultValue, W, larmodel, index)
 		end
 end
+
+function p2(model, listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+	for k=2:m
+		p3(k, model, listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+	end
+end
+
+function p3(k, model, listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+	for incell in model[k]
+		outcell=[]
+		p4!(outcell, incell, model, listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+		append!(larmodel[k],[outcell])
+	end
+end
+
+function p4!(outcell, incell, model, listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+	for v in incell
+		key = map(Lar.approxVal(7), V[:,v])
+		if get(vertDict,key,defaultValue)==defaultValue
+			index += 1
+			vertDict[key]=index
+			push!(outcell,index)
+			push!(W,key)
+		else
+			push!(outcell,vertDict[key])
+		end
+	end
+end
+
+
 
 """
 	embedTraversal(cloned::Struct,obj::Struct,n::Int,suffix::String)
