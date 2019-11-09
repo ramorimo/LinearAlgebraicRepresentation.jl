@@ -531,7 +531,7 @@ function larModelProduct( modelOne, modelTwo )
     end
 
     cells = []
-    for c1 in cells1
+	for c1 in cells1
         for c2 in cells2
             cell = []
             for vc in c1
@@ -543,7 +543,6 @@ function larModelProduct( modelOne, modelTwo )
         end
     end
 
-
     vertexmodel = []
     for v in keys(vertices)
         push!(vertexmodel, v)
@@ -553,7 +552,59 @@ function larModelProduct( modelOne, modelTwo )
     return (verts, cells)
 end
 
+function larModelProduct2( modelOne, modelTwo )
+    (V, cells1) = modelOne
+    (W, cells2) = modelTwo
 
+    vertices = DataStructures.OrderedDict();
+
+	k = k_func!(V, W, vertices)
+
+    cells = []
+    cells_func(cells, cells1, cells2, V, W, vertices)
+
+    vertexmodel = create_vm(vertices)
+
+    verts = hcat(vertexmodel...)
+    cells = [[v for v in cell] for cell in cells]
+    return (verts, cells)
+end
+function create_vm(vertices)
+	vertexmodel = []
+    for v in keys(vertices)
+        push!(vertexmodel, v)
+    end
+	return vertexmodel
+end
+function k_func!(V, W, vertices)
+	k = 1
+    for j in 1:size(V,2)
+       v = V[:,j]
+        for i in 1:size(W,2)
+          w = W[:,i]
+            id = [v;w]
+            if haskey(vertices, id) == false
+                vertices[id] = k
+                k = k + 1
+            end
+        end
+    end
+	return k
+end
+
+function cells_func(cells, cells1, cells2, V, W, vertices)
+	for c1 in cells1
+        for c2 in cells2
+            cell = []
+            for vc in c1
+                for wc in c2
+                    push!(cell, vertices[[V[:,vc];W[:,wc]]] )
+                end
+            end
+            push!(cells, cell)
+        end
+    end
+end
 
 
 """
