@@ -310,6 +310,45 @@ function struct2lar(structure) # TODO: extend to true `LARmodels`
 	return (V, chains...)
 end
 
+function struct2lar2(structure) # TODO: extend to true `LARmodels`
+	listOfModels = Lar.evalStruct(structure)
+	vertDict= Dict()
+	index::Int8,defaultValue::Int8 = 0,0
+	W = Array{Float64,1}[]
+	m::Int8 = length(listOfModels[1])
+	larmodel = [Array{Number,1}[] for k=1:m]
+
+	p(listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+
+	append!(larmodel[1], W)
+	V = hcat(larmodel[1]...)
+	chains = [convert(Lar.Cells, chain) for chain in larmodel[2:end]]
+	return (V, chains...)
+end
+
+function p(listOfModels, m, vertDict,defaultValue, W, larmodel, index)
+		for model in listOfModels
+			V = model[1]
+			for k=2:m
+				for incell in model[k]
+					outcell=[]
+					for v in incell
+						key = map(Lar.approxVal(7), V[:,v])
+						if get(vertDict,key,defaultValue)==defaultValue
+							index += 1
+							vertDict[key]=index
+							push!(outcell,index)
+							push!(W,key)
+						else
+							push!(outcell,vertDict[key])
+						end
+					end
+					append!(larmodel[k],[outcell])
+				end
+			end
+		end
+end
+
 """
 	embedTraversal(cloned::Struct,obj::Struct,n::Int,suffix::String)
 
