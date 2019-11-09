@@ -3,10 +3,10 @@ Lar = LinearAlgebraicRepresentation; GL = ViewerGL
 
 using Revise, OhMyREPL
 
-wall = Lar.svg2lar("test/svg/assembly/wall.svg", flag=false)
-openings = Lar.svg2lar("test/svg/assembly/openings.svg", flag=false)
-rectangle = Lar.svg2lar("test/svg/assembly/rectangle.svg", flag=false)
-box = Lar.svg2lar("test/svg/assembly/box.svg", flag=false)
+wall = Lar.svg2lar("../../test/svg/assembly/wall.svg", flag=false)
+openings = Lar.svg2lar("../../test/svg/assembly/openings.svg", flag=false)
+rectangle = Lar.svg2lar("../../test/svg/assembly/rectangle.svg", flag=false)
+box = Lar.svg2lar("../../test/svg/assembly/box.svg", flag=false)
 
 assembly = Lar.Struct([wall , openings, rectangle, box])
 V,EV = Lar.struct2lar(assembly)
